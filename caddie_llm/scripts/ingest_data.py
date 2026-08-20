@@ -14,7 +14,7 @@ client = OpenAI()
 
 
 def get_connection():
-    return pg.connect(PSQL_CONNECTION_STRING)
+    return pg.connect(str(PSQL_CONNECTION_STRING))
 
 
 def add_embeddings_to_db(chunks, embeddings):

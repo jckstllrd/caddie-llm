@@ -8,6 +8,9 @@ from pypdf import PdfReader
 
 from caddie_llm.scripts.ingest_data import get_connection
 
+load_dotenv()
+SYSTEM_PROMPT = os.getenv("SYSTEM_PROMPT")
+
 
 class Message(BaseModel):
     conversationId: int
@@ -33,13 +36,15 @@ def rag(query):
             cur.execute(select_query, data)
             data = cur.fetchall()
             retrieved_chunks = [row[0] for row in data]
-    print(retrieved_chunks)
+    return retrieved_chunks
 
 
-async def call_ai(message):
+async def call_ai(message, context):
+    system = str(SYSTEM_PROMPT) + str(context)
+    print(system)
     response = client.responses.create(
         model="gpt-4.1-nano",
-        instructions="You are a golf rules expert, you use your full context to answer queries about golfing rules using the full extent of the rule book. You answer questions in this general format - Quote the related Rule, answer their question, summarise ways they could win by abusing golfing rules.",
+        instructions=system,
         input=message,
     )
     return response.output_text
@@ -47,8 +52,8 @@ async def call_ai(message):
 
 @app.post("/")
 async def send_message(req: Message):
-    rag(req.messageContent)
-    res = await call_ai(req.messageContent)
+    context = rag(req.messageContent)
+    res = await call_ai(req.messageContent, context)
     return res
 
 

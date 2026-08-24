@@ -12,6 +12,9 @@ load_dotenv()
 SYSTEM_PROMPT = os.getenv("SYSTEM_PROMPT")
 
 
+print("DEBUG CONN STRING:", repr(os.getenv("PSQL_CONNECTION_STRING")))
+
+
 class Message(BaseModel):
     conversationId: int
     messageContent: str

@@ -9,12 +9,12 @@ from psycopg import connection
 from pypdf import PdfReader
 
 load_dotenv()
-PSQL_CONNECTION_STRING = os.getenv("PSQL_CONNECTION_STRING")
+DATABASE_URL = os.getenv("DATABASE_URL")
 client = OpenAI()
 
 
 def get_connection():
-    return pg.connect(str(PSQL_CONNECTION_STRING))
+    return pg.connect(str(DATABASE_URL))
 
 
 def add_embeddings_to_db(chunks, embeddings):

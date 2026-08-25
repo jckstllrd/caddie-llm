@@ -2,18 +2,19 @@ import os
 
 from dotenv import load_dotenv
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from openai import OpenAI
 from pydantic import BaseModel
 from pypdf import PdfReader
 
 from caddie_llm.scripts.ingest_data import get_connection
-
 load_dotenv()
 SYSTEM_PROMPT = os.getenv("SYSTEM_PROMPT")
-
+FOREGONE_FRONTEND_URL = str(os.getenv("FOREGONE_FRONTEND_URL"))
 
 print("DEBUG CONN STRING:", repr(os.getenv("PSQL_CONNECTION_STRING")))
 
+origins = [FOREGONE_FRONTEND_URL]
 
 class Message(BaseModel):
     conversationId: int
@@ -25,7 +26,7 @@ load_dotenv()
 API_KEY = os.getenv("OPENAI_API_KEY")
 ORGANISATION_KEY = os.getenv("OPENAI_ORGANISATION_ID")
 client = OpenAI(api_key=API_KEY, organization=ORGANISATION_KEY)
-
+app.add_middleware(CORSMiddleware, allow_origins=origins, allow_credentials=True, allow_methods=["*"], allow_headers=["*"])
 
 def rag(query):
     response = client.embeddings.create(model="text-embedding-3-small", input=query)

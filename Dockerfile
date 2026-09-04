@@ -14,6 +14,6 @@ USER app
 COPY pyproject.toml uv.lock* ./
 RUN uv sync --frozen --no-dev
 
-COPY caddie_llm ./caddie_llm
+COPY app ./app
 
-CMD ["uv", "run", "fastapi", "run", "caddie_llm/main.py", "--host", "0.0.0.0", "--port", "8080"]
+CMD ["uv", "run", "fastapi", "run", "app/main.py", "--host", "0.0.0.0", "--port", "8080"]

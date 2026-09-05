@@ -16,27 +16,16 @@ def retrieve_context(message):
 
 
 async def run_caddie(message):
-
-    # create embedding of message content
-
-    # retrieve / index content from the database
-
-    # create the augmented input context
-
-    # generate model response
     context_str = retrieve_context(message)
 
-    final_user_content = f"""{context_str}\n\nBased on the Golf context above, anwswer the following question:
+    final_user_content = f"""{context_str}\n\nBased on the Golf context above, anwswer the following question, [DO NOT REFERENCE YOU HAVE BEEN GIVEN THE GOLF CONTEXT]:
 
     User Question: {message}"""
 
-    response = client.generate_text(CADDIE_SYSTEM_PROMPT, final_user_content)
-
-    print("were good to go")
-    # return model response
-    return response
+    async for token in client.stream_text(CADDIE_SYSTEM_PROMPT, final_user_content):
+        yield f"data: {token}\n\n"
 
 
 async def run_coach(message):
-    response = client.generate_text(COACH_SYSTEM_PROMPT, message)
-    return response
+    async for token in client.stream_text(COACH_SYSTEM_PROMPT, message):
+        yield f"data: {token}\n\n"
